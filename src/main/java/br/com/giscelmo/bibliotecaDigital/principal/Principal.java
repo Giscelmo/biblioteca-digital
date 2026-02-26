@@ -1,14 +1,15 @@
 package br.com.giscelmo.bibliotecaDigital.principal;
 
-import br.com.giscelmo.bibliotecaDigital.modelo.DadosAutor;
-import br.com.giscelmo.bibliotecaDigital.modelo.DadosLivro;
-import br.com.giscelmo.bibliotecaDigital.modelo.RespostaGutendex;
+import br.com.giscelmo.bibliotecaDigital.modelo.*;
+import br.com.giscelmo.bibliotecaDigital.repository.AutorRepository;
+import br.com.giscelmo.bibliotecaDigital.repository.LivroRepository;
 import br.com.giscelmo.bibliotecaDigital.service.ConverteDados;
 import br.com.giscelmo.bibliotecaDigital.service.GuntendexConfig;
 import br.com.giscelmo.bibliotecaDigital.service.GutendexApi;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.List;
 import java.util.Scanner;
 
 @Component
@@ -16,13 +17,17 @@ public class Principal {
     private final GutendexApi api;
     private final GuntendexConfig config;
     private final ConverteDados converteDados;
+    private final LivroRepository livroRepository;
+    private final AutorRepository autorRepository;
     private RespostaGutendex respostaGutendex;
     private Scanner leitura = new Scanner(System.in);
 
-    public Principal(GutendexApi api, GuntendexConfig config, ConverteDados converteDados) {
+    public Principal(GutendexApi api, GuntendexConfig config, ConverteDados converteDados, LivroRepository livroRepository, AutorRepository autorRepository) {
         this.api = api;
         this.config = config;
         this.converteDados = converteDados;
+        this.livroRepository = livroRepository;
+        this.autorRepository = autorRepository;
     }
 
     public void executar() {
@@ -62,32 +67,31 @@ public class Principal {
         System.out.println(url);
 
         String json = api.obterDados(url);
-        System.out.println("""
-                Json recebido
-                %s""".formatted(json));
 
         respostaGutendex = converteDados.obterDados(json, RespostaGutendex.class);
+        if (respostaGutendex.results().isEmpty()) {
+            System.out.println("Livro não encotrado");
+            return;
+        }
 
         DadosLivro dadosLivro = respostaGutendex.results().getFirst();
 
+        Livro livro = livroRepository
+                .findByTitulo(dadosLivro.titulo())
+                .orElseGet(() -> {
+                    List<Autor> autores = dadosLivro.autor().stream()
+                            .map(dadosAutor ->
+                                    autorRepository
+                                            .findByNomeAutor(dadosAutor.nomeAutor())
+                                            .orElseGet(() ->
+                                                    autorRepository.save(new Autor(dadosAutor))
+                                            )
+                            ).toList();
 
+                    Livro novoLivro = new Livro(dadosLivro, autores);
+                    return livroRepository.save(novoLivro);
+                });
 
-        String nomeAutor = dadosLivro.autor()
-                .stream()
-                .findFirst()
-                .map(DadosAutor::nameAutor)
-                .orElse("Desconhecido");
-
-        String idioma = dadosLivro.idioma().stream()
-                .findFirst()
-                .orElse("desconhecido");
-
-        System.out.println("""
-                Titulo: %s
-                Autor: %s
-                Idioma: %s
-                Downloads: %d
-                """.formatted(dadosLivro.titulo(), nomeAutor,
-                idioma, dadosLivro.download()));
+        System.out.println(livro);
     }
 }

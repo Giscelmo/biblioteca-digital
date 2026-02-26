@@ -19,11 +19,10 @@ public class Autor {
 
     public Autor() {}
 
-    public Autor(String nomeAutor, Integer dataNascimento, Integer dataFalecimento, List<Livro> livros) {
-        this.nomeAutor = nomeAutor;
-        this.dataNascimento = dataNascimento;
-        this.dataFalecimento = dataFalecimento;
-        this.livros = livros;
+    public Autor(DadosAutor dadosAutor) {
+        this.nomeAutor = dadosAutor.nomeAutor();
+        this.dataNascimento = dadosAutor.dataNascimento();
+        this.dataFalecimento = dadosAutor.dataFalecimento();
     }
 
     public Long getId() {

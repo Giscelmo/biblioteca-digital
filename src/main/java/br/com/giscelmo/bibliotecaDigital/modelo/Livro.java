@@ -3,6 +3,7 @@ package br.com.giscelmo.bibliotecaDigital.modelo;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "livros")
@@ -25,11 +26,14 @@ public class Livro {
     public Livro() {}
 
 
-    public Livro(String titulo, List<Autor> autor, String idioma, Integer download) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.idioma = idioma;
-        this.download = download;
+    public Livro(DadosLivro dadosLivro, List<Autor> autores) {
+        this.titulo = dadosLivro.titulo();
+        this.autor = autores;
+        this.idioma = dadosLivro.idioma()
+                .stream()
+                .findFirst()
+                .orElse("desconhecido");
+        this.download = dadosLivro.download();
     }
 
     public Long getId() {
@@ -74,12 +78,20 @@ public class Livro {
 
     @Override
     public String toString() {
+        String nomeAutores = autor.stream()
+                .map(Autor::getNomeAutor)
+                .collect(Collectors.joining(", "));
         return ("""
                 Titulo: %s
                 Autor: %s
                 Idioma: %s
                 Downloads: %d
-                """.formatted(titulo, autor, idioma, download));
+                """.formatted(
+                titulo,
+                nomeAutores,
+                idioma,
+                download)
+        );
     }
 }
 
