@@ -31,29 +31,47 @@ public class Principal {
     }
 
     public void executar() {
-        var opcao = -1;
 
-        while (opcao != 0) {
+        while (true) {
             var menu = """
                     1 - Buscar Livro
+                    2 - Listar livros registrados
                     0 - Sair""";
-
             System.out.println(menu);
-            opcao = leitura.nextInt();
-            leitura.nextLine();
+            System.out.println("Digite a opção: ");
+            String entrada = leitura.nextLine().trim();
+
+            if(entrada.isEmpty()) {
+                System.out.println("Opção inválida! Digite algu número.");
+                continue;
+            }
+
+            int opcao;
+
+            try {
+                opcao = Integer.parseInt(entrada);
+            } catch (NumberFormatException e) {
+                System.out.println("Opção inválida! Digite um número.");
+                continue;
+            }
+
+            if(opcao == 0) {
+                System.out.println("Saindo...");
+                break;
+            }
 
             switch (opcao) {
                 case 1:
                     buscarLivros();
                     break;
-                case 0:
-                    System.out.println("Saindo");
+                case 2:
+                    buscarLivrosRegistrado();
                     break;
                 default:
                     System.out.println("Opção invalida.");
             }
-
         }
+        leitura.close();
     }
 
     private void buscarLivros() {
@@ -93,5 +111,10 @@ public class Principal {
                 });
 
         System.out.println(livro);
+    }
+
+    private void buscarLivrosRegistrado() {
+        List<Livro>  livroBuscado = livroRepository.livroBuscado();
+        livroBuscado.forEach(System.out::println);
     }
 }

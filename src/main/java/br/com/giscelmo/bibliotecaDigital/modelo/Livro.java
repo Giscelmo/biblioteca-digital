@@ -82,10 +82,12 @@ public class Livro {
                 .map(Autor::getNomeAutor)
                 .collect(Collectors.joining(", "));
         return ("""
+                ****** Livro ******
                 Titulo: %s
                 Autor: %s
                 Idioma: %s
                 Downloads: %d
+                *******************
                 """.formatted(
                 titulo,
                 nomeAutores,
