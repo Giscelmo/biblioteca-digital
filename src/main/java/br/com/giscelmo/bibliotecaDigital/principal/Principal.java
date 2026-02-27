@@ -37,6 +37,7 @@ public class Principal {
                     1 - Buscar Livro
                     2 - Listar livros registrados
                     3 - Listar autores registrados
+                    4 - Listar autores vivos em um determinando ano
                     0 - Sair""";
             System.out.println(menu);
             System.out.println("Digite a opção: ");
@@ -70,6 +71,9 @@ public class Principal {
                     break;
                 case 3:
                     buscarAutorRegistrado();
+                    break;
+                case 4:
+                    buscarAutorVivo();
                     break;
                 default:
                     System.out.println("Opção invalida.");
@@ -125,5 +129,18 @@ public class Principal {
     private void buscarAutorRegistrado() {
         List<Autor> autorBuscado = autorRepository.autorBuscado();
         autorBuscado.forEach(System.out::println);
+    }
+
+    private void buscarAutorVivo() {
+        System.out.println("Insira o ano que deseja pesquisar: ");
+        int ano = leitura.nextInt();
+        leitura.nextLine();
+
+        List<Autor> autorVivoBuscado = autorRepository.autorVivoBuscado(ano);
+        if(autorVivoBuscado.isEmpty()){
+            System.out.println("Nenhum autor encontrado vivo em " + ano);
+        } else {
+            autorVivoBuscado.forEach(System.out::println);
+        }
     }
 }

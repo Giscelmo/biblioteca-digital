@@ -12,4 +12,7 @@ public interface AutorRepository extends JpaRepository<Autor, Long> {
 
     @Query("SELECT DISTINCT a FROM Autor a LEFT JOIN FETCH a.livros ORDER BY a.nomeAutor ASC")
     List<Autor> autorBuscado();
+
+    @Query("SELECT a FROM Autor a WHERE a.dataNascimento <= :ano AND (a.dataFalecimento IS NULL OR a.dataFalecimento >= :ano)")
+    List<Autor> autorVivoBuscado(int ano);
 }
