@@ -36,6 +36,7 @@ public class Principal {
             var menu = """
                     1 - Buscar Livro
                     2 - Listar livros registrados
+                    3 - Listar autores registrados
                     0 - Sair""";
             System.out.println(menu);
             System.out.println("Digite a opção: ");
@@ -66,6 +67,9 @@ public class Principal {
                     break;
                 case 2:
                     buscarLivrosRegistrado();
+                    break;
+                case 3:
+                    buscarAutorRegistrado();
                     break;
                 default:
                     System.out.println("Opção invalida.");
@@ -116,5 +120,10 @@ public class Principal {
     private void buscarLivrosRegistrado() {
         List<Livro>  livroBuscado = livroRepository.livroBuscado();
         livroBuscado.forEach(System.out::println);
+    }
+
+    private void buscarAutorRegistrado() {
+        List<Autor> autorBuscado = autorRepository.autorBuscado();
+        autorBuscado.forEach(System.out::println);
     }
 }

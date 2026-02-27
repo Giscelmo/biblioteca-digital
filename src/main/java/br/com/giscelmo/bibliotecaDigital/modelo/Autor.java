@@ -3,6 +3,7 @@ package br.com.giscelmo.bibliotecaDigital.modelo;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "autores")
@@ -14,7 +15,7 @@ public class Autor {
     private String nomeAutor;
     private Integer dataNascimento;
     private Integer dataFalecimento;
-    @ManyToMany(mappedBy = "autor")
+    @ManyToMany(mappedBy = "autor", fetch = FetchType.EAGER)
     private List<Livro> livros;
 
     public Autor() {}
@@ -67,11 +68,14 @@ public class Autor {
 
     @Override
     public String toString() {
+        String livrosAutores = livros.stream()
+                .map(Livro::getTitulo)
+                .collect(Collectors.joining(", "));
         return ("""
                 Autor: %s
                 Data Nascimento: %d
                 Falecimento: %d
-                Livros: %s
-                """.formatted(nomeAutor, dataNascimento, dataFalecimento, livros));
+                Livro(s): %s
+                """.formatted(nomeAutor, dataNascimento, dataFalecimento, livrosAutores));
     }
 }
