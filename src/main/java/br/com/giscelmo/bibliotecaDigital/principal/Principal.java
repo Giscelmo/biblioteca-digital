@@ -38,6 +38,7 @@ public class Principal {
                     2 - Listar livros registrados
                     3 - Listar autores registrados
                     4 - Listar autores vivos em um determinando ano
+                    5 - Listar livros por idioma
                     0 - Sair""";
             System.out.println(menu);
             System.out.println("Digite a opção: ");
@@ -74,6 +75,9 @@ public class Principal {
                     break;
                 case 4:
                     buscarAutorVivo();
+                    break;
+                case 5:
+                    listarLivroPorIdioma();
                     break;
                 default:
                     System.out.println("Opção invalida.");
@@ -141,6 +145,23 @@ public class Principal {
             System.out.println("Nenhum autor encontrado vivo em " + ano);
         } else {
             autorVivoBuscado.forEach(System.out::println);
+        }
+    }
+
+    private void listarLivroPorIdioma() {
+        System.out.println("""
+                Insira o idioma para realizar a busca: 
+                es - espanhol
+                en - inglês
+                fr - francês
+                pt - português
+                """);
+        var idioma = leitura.nextLine();
+        List<Livro> buscaLivroPorIdioma = livroRepository.buscaLivroPorIdioma(idioma);
+        if(buscaLivroPorIdioma.isEmpty()) {
+            System.out.println("Nenhum livro encontrado neste idioma" + idioma);
+        } else {
+            buscaLivroPorIdioma.forEach(System.out::println);
         }
     }
 }

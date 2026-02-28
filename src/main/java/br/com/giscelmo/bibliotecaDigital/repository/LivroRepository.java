@@ -12,4 +12,7 @@ public interface LivroRepository extends JpaRepository<Livro, Long> {
 
     @Query("SELECT l FROM Livro l ORDER BY l.titulo DESC")
     List<Livro> livroBuscado();
+
+    @Query("SELECT l FROM Livro l WHERE l.idioma = :idioma")
+    List<Livro> buscaLivroPorIdioma(String idioma);
 }
